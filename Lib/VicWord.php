@@ -22,7 +22,7 @@ class VicWord
     /**
      *
      */
-    const TYPE_IGB = 'json';
+    const TYPE_IGB = 'igb';
 
     /**
      * @var array|mixed

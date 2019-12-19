@@ -22,7 +22,7 @@ class VicDict
     /**
      *
      */
-    const TYPE_IGB = 'json';
+    const TYPE_IGB = 'igb';
 
     /**
      * @var array|mixed
@@ -127,7 +127,7 @@ class VicDict
      */
     public function save()
     {
-        if ($this->type == 'igb') {
+        if ($this->type == self::TYPE_IGB) {
             $str = igbinary_serialize($this->word);
         } else {
             $str = json_encode($this->word);
