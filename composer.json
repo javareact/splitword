@@ -1,0 +1,21 @@
+{
+  "name": "javareact/splitword",
+  "description": "This is a participle library",
+  "type": "library",
+  "authors": [
+    {
+      "name": "JavaReact",
+      "email": "javareact@gmail.com"
+    }
+  ],
+  "license": "MIT",
+  "require": {
+    "php": ">=7.0.0",
+    "ext-json": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "JavaReact\\SplitWord\\": "Lib"
+    }
+  }
+}
