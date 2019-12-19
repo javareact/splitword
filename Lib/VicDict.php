@@ -9,8 +9,24 @@
 
 namespace JavaReact\SplitWord;
 
+/**
+ * Class VicDict
+ * @package JavaReact\SplitWord
+ */
 class VicDict
 {
+    /**
+     *
+     */
+    const TYPE_JSON = 'json';
+    /**
+     *
+     */
+    const TYPE_IGB = 'json';
+
+    /**
+     * @var array|mixed
+     */
     private $word = [];
     /**
      * 词典地址
@@ -18,25 +34,49 @@ class VicDict
      */
     private $code = 'utf-8';
 
+    /**
+     * @var array
+     */
     private $end = ['\\' => 1];
 
+    /**
+     * @var array
+     */
     private $default_end = ['\\' => 1];
 
+    /**
+     * @var string
+     */
     private $end_key = '\\';
 
-    private $type = 'igb';
+    /**
+     * @var string
+     */
+    private $type = self::TYPE_JSON;
 
-    public function __construct($type = 'igb')
+    /**
+     * VicDict constructor.
+     * @param string $type
+     * @throws \Exception
+     */
+    public function __construct($type = self::TYPE_JSON)
     {
         define('_VIC_WORD_DICT_PATH_', __DIR__ . '/../Data/dict.' . $type);
-
         $this->type = $type;
-        if (file_exists(_VIC_WORD_DICT_PATH_)) {
-            if ($type == 'igb') {
+        if (!file_exists(_VIC_WORD_DICT_PATH_)) {
+            throw new \Exception('分词文件不存在');
+        }
+        switch ($type) {
+            case self::TYPE_IGB:
+                if (!function_exists('igbinary_unserialize')) {
+                    throw new \Exception('需要安装igb扩展');
+                }
                 $this->word = igbinary_unserialize(file_get_contents(_VIC_WORD_DICT_PATH_));
-            } else {
+                break;
+            case self::TYPE_JSON:
+            default:
                 $this->word = json_decode(file_get_contents(_VIC_WORD_DICT_PATH_), true);
-            }
+                break;
         }
     }
 
@@ -55,6 +95,10 @@ class VicDict
         return false;
     }
 
+    /**
+     * @param $word
+     * @return bool
+     */
     private function merge($word)
     {
         $ar = $this->toArr($word);
@@ -78,6 +122,9 @@ class VicDict
         return true;
     }
 
+    /**
+     * @return bool|int
+     */
     public function save()
     {
         if ($this->type == 'igb') {
@@ -88,12 +135,21 @@ class VicDict
         return file_put_contents(_VIC_WORD_DICT_PATH_, $str);
     }
 
+    /**
+     * @param $word
+     * @return mixed
+     */
     private function filter($word)
     {
         return str_replace(["\n", "\t"], '', trim($word));
     }
 
-
+    /**
+     * @param $arr
+     * @param $v
+     * @param int $i
+     * @return array
+     */
     private function dict($arr, $v, $i = 0)
     {
         if (isset($arr[$i])) {
@@ -103,6 +159,10 @@ class VicDict
         }
     }
 
+    /**
+     * @param $str
+     * @return array
+     */
     private function toArr($str)
     {
         $l = mb_strlen($str, $this->code);

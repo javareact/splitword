@@ -9,14 +9,39 @@
 
 namespace JavaReact\SplitWord;
 
+/**
+ * Class VicWord
+ * @package JavaReact\SplitWord
+ */
 class VicWord
 {
+    /**
+     *
+     */
+    const TYPE_JSON = 'json';
+    /**
+     *
+     */
+    const TYPE_IGB = 'json';
+
+    /**
+     * @var array|mixed
+     */
     private $dict = [];
 
+    /**
+     * @var string
+     */
     private $end = '\\';
 
+    /**
+     * @var bool
+     */
     private $auto = false;
 
+    /**
+     * @var int
+     */
     private $count = 0;
 
 
@@ -25,24 +50,35 @@ class VicWord
      */
     private $x = '\\x';
 
-    public function __construct($type = 'igb')
+    /**
+     * VicWord constructor.
+     * @param string $type
+     * @throws \Exception
+     */
+    public function __construct($type = self::TYPE_JSON)
     {
         define('_VIC_WORD_DICT_PATH_', __DIR__ . '/../Data/dict.' . $type);
 
         if (!file_exists(_VIC_WORD_DICT_PATH_)) {
             throw new \Exception('分词文件不存在');
         }
-
-        if ($type == 'igb') {
-            $this->dict = igbinary_unserialize(file_get_contents(_VIC_WORD_DICT_PATH_));
-        } else {
-            $this->dict = json_decode(file_get_contents(_VIC_WORD_DICT_PATH_), true);
-
+        switch ($type) {
+            case self::TYPE_IGB:
+                if (!function_exists('igbinary_unserialize')) {
+                    throw new \Exception('需要安装igb扩展');
+                }
+                $this->dict = igbinary_unserialize(file_get_contents(_VIC_WORD_DICT_PATH_));
+                break;
+            case self::TYPE_JSON:
+            default:
+                $this->dict = json_decode(file_get_contents(_VIC_WORD_DICT_PATH_), true);
+                break;
         }
     }
 
     /**
      * @param string $path
+     * @return array
      */
     public function getWord($str)
     {
@@ -53,6 +89,7 @@ class VicWord
 
     /**
      * @param string $path
+     * @return array
      */
     public function getShortWord($str)
     {
@@ -63,6 +100,7 @@ class VicWord
 
     /**
      * @param string $path
+     * @return array
      */
     public function getAutoWord($str)
     {
@@ -71,13 +109,21 @@ class VicWord
         return $this->autoFind($str, ['long' => 1]);
     }
 
-
+    /**
+     * @param $str
+     * @return string
+     */
     private function filter($str)
     {
         return strtolower(trim($str));
     }
 
-
+    /**
+     * @param $str
+     * @param $i
+     * @return array
+     * @throws \Exception
+     */
     private function getD(&$str, $i)
     {
         $o = ord($str[$i]);
@@ -98,6 +144,11 @@ class VicWord
         return [$d, $i];
     }
 
+    /**
+     * @param $str
+     * @param array $auto_info
+     * @return array
+     */
     private function autoFind($str, $auto_info = [])
     {
         if ($auto_info['long']) {
@@ -107,7 +158,11 @@ class VicWord
         }
     }
 
-
+    /**
+     * @param $r
+     * @param $auto_info
+     * @return bool
+     */
     private function reGet(&$r, $auto_info)
     {
         $auto_info['c'] = isset($auto_info['c']) ? $auto_info['c']++ : 1;
@@ -145,6 +200,11 @@ class VicWord
         }
     }
 
+    /**
+     * @param $old
+     * @param $new
+     * @return mixed
+     */
     private function getGoodWord($old, $new)
     {
         if (!$new) {
@@ -158,6 +218,10 @@ class VicWord
 
     }
 
+    /**
+     * @param $ar
+     * @return int
+     */
     private function getUnknowCount($ar)
     {
         $i = 0;
@@ -170,6 +234,12 @@ class VicWord
     }
 
 
+    /**
+     * @param $str
+     * @param array $auto_info
+     * @return array
+     * @throws \Exception
+     */
     private function find($str, $auto_info = [])
     {
         $len = strlen($str);
@@ -212,6 +282,13 @@ class VicWord
     }
 
 
+    /**
+     * @param $r
+     * @param $n
+     * @param $s
+     * @param $i
+     * @param array $auto_info
+     */
     private function addNotFind(&$r, $n, $s, $i, $auto_info = [])
     {
         if ($n !== $s) {
@@ -224,6 +301,12 @@ class VicWord
     }
 
 
+    /**
+     * @param $str
+     * @param array $auto_info
+     * @return array
+     * @throws \Exception
+     */
     private function shortFind($str, $auto_info = [])
     {
         $len = strlen($str);
@@ -272,6 +355,13 @@ class VicWord
         return $r;
     }
 
+    /**
+     * @param $r
+     * @param $k
+     * @param $i
+     * @param $x
+     * @param int $find
+     */
     private function addResult(&$r, $k, $i, $x, $find = 1)
     {
         $r[] = [$k, $i, $x, $find];
