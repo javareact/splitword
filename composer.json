@@ -1,7 +1,14 @@
 {
   "name": "javareact/splitword",
-  "description": "This is a participle library",
+  "description": "VicWord一个纯php的分词算法,This is a participle library",
+  "homepage": "https://github.com/javareact/splitword",
   "type": "library",
+  "keywords": [
+    "分词",
+    "算法",
+    "VicWord",
+    "PHP"
+  ],
   "authors": [
     {
       "name": "JavaReact",
